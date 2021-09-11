@@ -14,8 +14,8 @@ COPY package*.json ./
 RUN npm ci --only=production
 
 # Bundle app source
-COPY /dist/* ./
+COPY . .
 
 EXPOSE 3000
 
-CMD [ "node", "index.js" ]
+CMD [ "node", "/dist/index.js" ]
