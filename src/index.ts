@@ -1,13 +1,40 @@
 import express from 'express';
 import serveIndex from 'serve-index';
-import youtubedl from 'youtube-dl-exec';
+import youtubedl, { YtResponse } from 'youtube-dl-exec';
 
 const app = express();
 const PORT = process.env.PORT;
 const FOLDER_LOCATION = process.env.FOLDER_LOCATION;
 const SAVE_DIRECTORY = process.env.SAVE_DIRECTORY;
 const OUTPUT_FORMAT = process.env.OUTPUT_FORMAT;
-const AUDIO_ONLY : boolean = process.env.AUDIO_ONLY === 'true';
+const AUDIO_ONLY = process.env.AUDIO_ONLY === 'true';
+
+function createDLFlags(fileName: string = null, jsonDump : boolean = false) {
+    const flags: any = {
+        noWarnings: true,
+        noCallHome: true,
+        noCheckCertificate: true,
+        format: 'bestaudio/bestvideo/best',
+        youtubeSkipDashManifest: true,
+        output: `${FOLDER_LOCATION}${SAVE_DIRECTORY}${fileName ? OUTPUT_FORMAT.replace("%(title)s", fileName) : OUTPUT_FORMAT}`
+    };
+
+    if (AUDIO_ONLY) {
+        flags.extractAudio = true;
+        flags.audioFormat = 'mp3';
+        flags.audioQuality = 0;
+    }
+
+    if (jsonDump) {
+        flags.dumpSingleJson = true;
+    }
+
+    return flags;
+}
+
+async function getVideoJsonInfo(url : string) {
+    return youtubedl(url, createDLFlags(null, true));
+}
 
 app.use((req, res, next) => {
     // tslint:disable-next-line:no-console
@@ -32,51 +59,38 @@ app.get('/', (req, res) => {
 });
 
 app.post('/format', (req, res) => {
-    const flags : any = {
-        // dumpSingleJson: true,
-        noWarnings: true,
-        noCallHome: true,
-        noCheckCertificate: true,
-        listFormats: true,
-        format: 'bestaudio/bestvideo/best',
-        youtubeSkipDashManifest: true,
-        output: `${FOLDER_LOCATION}${SAVE_DIRECTORY}${OUTPUT_FORMAT}`
-    }
+    const flags = createDLFlags(null, false);
+    flags.listFormats = true;
 
     youtubedl(req.body.url, flags)
-    // tslint:disable-next-line:no-console
-    .then(output => console.log(output))
-    // tslint:disable-next-line:no-console
-    .catch(output => console.log(output));
+        // tslint:disable-next-line:no-console
+        .then(output => console.log(output))
+        // tslint:disable-next-line:no-console
+        .catch(output => console.log(output));
 
     res.status(200).send('Success');
+});
+
+app.post('/videojson', async (req, res) => {
+    const output = await getVideoJsonInfo(req.body.url);
+
+    // tslint:disable-next-line:no-console
+    console.log(output.title);
+
+    res.status(200).send(output);
 });
 
 app.post('/download', async (req, res) => {
     // tslint:disable-next-line:no-console
     console.log(`Request to download: ${req.body.url}`);
 
-    const flags : any = {
-        // dumpSingleJson: true,
-        noWarnings: true,
-        noCallHome: true,
-        noCheckCertificate: true,
-        format: 'bestaudio/bestvideo/best',
-        youtubeSkipDashManifest: true,
-        output: `${FOLDER_LOCATION}${SAVE_DIRECTORY}${OUTPUT_FORMAT}`
-    }
+    const vidInfo = await getVideoJsonInfo(req.body.url);
 
-    if (AUDIO_ONLY) {
-        flags.extractAudio = true;
-        flags.audioFormat = 'mp3';
-        flags.audioQuality = 0;
-    }
-
-    youtubedl(req.body.url, flags)
-    // tslint:disable-next-line:no-console
-    .then(output => console.log(output))
-    // tslint:disable-next-line:no-console
-    .catch(output => console.log(output));
+    youtubedl(req.body.url, createDLFlags(vidInfo.title))
+        // tslint:disable-next-line:no-console
+        .then(output => console.log(output))
+        // tslint:disable-next-line:no-console
+        .catch(output => console.log(output));
 
     res.status(200).send('Success');
 });
