@@ -31,6 +31,10 @@ WORKDIR /usr/src/app
 RUN apt-get update
 RUN apt-get --yes install ffmpeg
 
+# Get locales and use UTF-8
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
+
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
