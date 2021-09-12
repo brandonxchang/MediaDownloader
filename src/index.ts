@@ -35,8 +35,8 @@ app.post('/download', async (req, res) => {
     // tslint:disable-next-line:no-console
     console.log(`Request to download: ${req.body.url}`);
 
-    var flags : any = {
-        //dumpSingleJson: true,
+    const flags : any = {
+        // dumpSingleJson: true,
         noWarnings: true,
         noCallHome: true,
         noCheckCertificate: true,
@@ -52,6 +52,7 @@ app.post('/download', async (req, res) => {
     youtubedl(req.body.url, flags)
     // tslint:disable-next-line:no-console
     .then(output => console.log(output))
+    // tslint:disable-next-line:no-console
     .catch(output => console.log(output));
 
     res.status(200).send('Success');
