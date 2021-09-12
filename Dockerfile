@@ -32,8 +32,10 @@ RUN apt-get update
 RUN apt-get --yes install ffmpeg
 
 # Get locales and use UTF-8
-ENV LANG C.UTF-8
-ENV LC_ALL C.UTF-8
+RUN apt-get install -y locales && locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
