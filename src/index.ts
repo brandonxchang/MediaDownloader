@@ -31,6 +31,27 @@ app.get('/', (req, res) => {
     res.send('Successful response.');
 });
 
+app.post('/format', (req, res) => {
+    const flags : any = {
+        // dumpSingleJson: true,
+        noWarnings: true,
+        noCallHome: true,
+        noCheckCertificate: true,
+        listFormats: true,
+        format: 'bestaudio/bestvideo/best',
+        youtubeSkipDashManifest: true,
+        output: `${FOLDER_LOCATION}${SAVE_DIRECTORY}${OUTPUT_FORMAT}`
+    }
+
+    youtubedl(req.body.url, flags)
+    // tslint:disable-next-line:no-console
+    .then(output => console.log(output))
+    // tslint:disable-next-line:no-console
+    .catch(output => console.log(output));
+
+    res.status(200).send('Success');
+});
+
 app.post('/download', async (req, res) => {
     // tslint:disable-next-line:no-console
     console.log(`Request to download: ${req.body.url}`);
@@ -47,6 +68,8 @@ app.post('/download', async (req, res) => {
 
     if (AUDIO_ONLY) {
         flags.extractAudio = true;
+        flags.audioFormat = 'mp3';
+        flags.audioQuality = 0;
     }
 
     youtubedl(req.body.url, flags)
