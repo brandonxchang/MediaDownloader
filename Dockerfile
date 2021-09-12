@@ -38,7 +38,8 @@ COPY package*.json ./
 
 RUN npm ci --only=production
 COPY --from=0 /usr/src/app/dist .
+COPY .env .
 
 EXPOSE 3000
 
-CMD [ "node", "index.js" ]
+CMD [ "node", "-r", "dotenv/config", "index.js" ]

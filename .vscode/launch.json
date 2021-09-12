@@ -15,6 +15,9 @@
             "preLaunchTask": "tsc: build - tsconfig.json",
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"
+            ],
+            "runtimeArgs": [
+                "--require=dotenv/config"
             ]
         }
     ]
