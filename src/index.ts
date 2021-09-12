@@ -86,7 +86,7 @@ app.post('/download', async (req, res) => {
 
     const vidInfo = await getVideoJsonInfo(req.body.url);
 
-    youtubedl(req.body.url, createDLFlags(vidInfo.title))
+    youtubedl(req.body.url, createDLFlags())
         // tslint:disable-next-line:no-console
         .then(output => console.log(output))
         // tslint:disable-next-line:no-console
