@@ -7,6 +7,7 @@ const PORT = process.env.PORT;
 const FOLDER_LOCATION = process.env.FOLDER_LOCATION;
 const SAVE_DIRECTORY = process.env.SAVE_DIRECTORY;
 const OUTPUT_FORMAT = process.env.OUTPUT_FORMAT;
+const AUDIO_ONLY : boolean = process.env.AUDIO_ONLY === 'true';
 
 app.use((req, res, next) => {
     // tslint:disable-next-line:no-console
@@ -34,7 +35,7 @@ app.post('/download', async (req, res) => {
     // tslint:disable-next-line:no-console
     console.log(`Request to download: ${req.body.url}`);
 
-    const output = await youtubedl(req.body.url, {
+    var flags : any = {
         //dumpSingleJson: true,
         noWarnings: true,
         noCallHome: true,
@@ -42,9 +43,16 @@ app.post('/download', async (req, res) => {
         format: 'bestaudio/bestvideo/best',
         youtubeSkipDashManifest: true,
         output: `${FOLDER_LOCATION}${SAVE_DIRECTORY}${OUTPUT_FORMAT}`
-    });
+    }
+
+    if (AUDIO_ONLY) {
+        flags.extractAudio = true;
+    }
+
+    youtubedl(req.body.url, flags)
     // tslint:disable-next-line:no-console
-    console.log(output);
+    .then(output => console.log(output))
+    .catch(output => console.log(output));
 
     res.status(200).send('Success');
 });
