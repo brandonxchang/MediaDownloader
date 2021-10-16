@@ -4,6 +4,7 @@ import youtubedl, { YtResponse } from 'youtube-dl-exec';
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs/promises';
 import { constants } from 'fs';
+import utf8 from 'utf8';
 
 const app = express();
 const PORT = process.env.PORT;
@@ -96,13 +97,15 @@ app.post('/download', async (req, res) => {
             console.log(output);
             const downloadedItem = `${FOLDER_LOCATION}${SAVE_DIRECTORY}${generatedId}.mp3`;
             const renamedItem = `${FOLDER_LOCATION}${SAVE_DIRECTORY}${vidInfo.title}.mp3`;
+            const encodedRenamedItem = utf8.encode(renamedItem);
+            
             try {
                 // tslint:disable-next-line:no-bitwise
                 await fs.access(downloadedItem, constants.R_OK | constants.W_OK);
-                await fs.copyFile(downloadedItem, renamedItem);
+                await fs.copyFile(downloadedItem, encodedRenamedItem);
                 //fs.rename(downloadedItem, renamedItem);
                 // tslint:disable-next-line:no-console
-                console.log(`Copied ${downloadedItem} to ${renamedItem}`);
+                console.log(`Copied ${downloadedItem} to ${renamedItem} as ${encodedRenamedItem}`);
             } catch (e) {
                 // tslint:disable-next-line:no-console
                 console.error(`Error trying to rename ${downloadedItem}: ${e}`);
