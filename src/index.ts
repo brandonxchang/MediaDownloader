@@ -99,13 +99,13 @@ app.post('/download', async (req, res) => {
             try {
                 // tslint:disable-next-line:no-bitwise
                 await fs.access(downloadedItem, constants.R_OK | constants.W_OK);
-                fs.copyFile(downloadedItem, renamedItem);
+                await fs.copyFile(downloadedItem, renamedItem);
                 //fs.rename(downloadedItem, renamedItem);
                 // tslint:disable-next-line:no-console
                 console.log(`Copied ${downloadedItem} to ${renamedItem}`);
             } catch {
                 // tslint:disable-next-line:no-console
-                console.error(`cannot access file: ${downloadedItem}`);
+                console.error(`Error trying to rename ${downloadedItem}`);
             }
         })
         // tslint:disable-next-line:no-console
