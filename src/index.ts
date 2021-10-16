@@ -103,13 +103,13 @@ app.post('/download', async (req, res) => {
                 //fs.rename(downloadedItem, renamedItem);
                 // tslint:disable-next-line:no-console
                 console.log(`Copied ${downloadedItem} to ${renamedItem}`);
-            } catch {
+            } catch (e) {
                 // tslint:disable-next-line:no-console
-                console.error(`Error trying to rename ${downloadedItem}`);
+                console.error(`Error trying to rename ${downloadedItem}: ${e}`);
             }
         })
-        // tslint:disable-next-line:no-console
-        //.catch(output => console.log(output));
+    // tslint:disable-next-line:no-console
+    //.catch(output => console.log(output));
 
     res.status(200).send({ id: generatedId });
 });
