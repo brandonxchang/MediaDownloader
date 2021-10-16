@@ -83,17 +83,18 @@ app.post('/videojson', async (req, res) => {
 
 app.post('/download', async (req, res) => {
     // tslint:disable-next-line:no-console
-    console.log(`Request to download: ${req.body.url}`);
 
     const vidInfo = await getVideoJsonInfo(req.body.url);
     const generatedId = uuidv4();
     const fileName = vidInfo.title.replace(/[\/\\]/g, ' ');
+    const downloadedItem = `${FOLDER_LOCATION}${SAVE_DIRECTORY}${fileName}.mp3`;
 
+    console.log(`Request to download ${vidInfo.title} at ${req.body.url} as ${downloadedItem}`);
     youtubedl(req.body.url, createDLFlags(fileName))
         .then(async output => {
             // tslint:disable-next-line:no-console
             console.log(output);
-            const downloadedItem = `${FOLDER_LOCATION}${SAVE_DIRECTORY}${fileName}.mp3`;
+
             console.log(`Downloaded to: ${downloadedItem}`);
         })
         // tslint:disable-next-line:no-console
