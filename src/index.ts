@@ -91,21 +91,21 @@ app.post('/download', async (req, res) => {
     const vidInfo = await getVideoJsonInfo(req.body.url);
     const generatedId = uuidv4();
 
-    youtubedl(req.body.url, createDLFlags(generatedId))
+    youtubedl(req.body.url, createDLFlags(vidInfo.title))
         .then(async output => {
             // tslint:disable-next-line:no-console
             console.log(output);
             const downloadedItem = `${FOLDER_LOCATION}${SAVE_DIRECTORY}${generatedId}.mp3`;
-            const renamedItem = `${FOLDER_LOCATION}${SAVE_DIRECTORY}${vidInfo.title}.mp3`;
-            const buffer = Buffer.from(renamedItem);
+            //const renamedItem = `${FOLDER_LOCATION}${SAVE_DIRECTORY}${vidInfo.title}.mp3`;
+            //const buffer = Buffer.from(renamedItem);
             
             try {
                 // tslint:disable-next-line:no-bitwise
-                await fs.access(downloadedItem, constants.R_OK | constants.W_OK);
-                await fs.copyFile(downloadedItem, renamedItem);
+                //await fs.access(downloadedItem, constants.R_OK | constants.W_OK);
+                //await fs.copyFile(downloadedItem, renamedItem);
                 //fs.rename(downloadedItem, renamedItem);
                 // tslint:disable-next-line:no-console
-                console.log(`Copied ${downloadedItem} to ${renamedItem} as ${buffer}`);
+                //console.log(`Copied ${downloadedItem} to ${renamedItem} as ${buffer}`);
             } catch (e) {
                 // tslint:disable-next-line:no-console
                 console.error(`Error trying to rename ${downloadedItem}: ${e}`);
