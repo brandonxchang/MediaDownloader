@@ -102,7 +102,7 @@ app.post('/download', async (req, res) => {
             try {
                 // tslint:disable-next-line:no-bitwise
                 await fs.access(downloadedItem, constants.R_OK | constants.W_OK);
-                await fs.copyFile(downloadedItem, buffer);
+                await fs.copyFile(downloadedItem, renamedItem);
                 //fs.rename(downloadedItem, renamedItem);
                 // tslint:disable-next-line:no-console
                 console.log(`Copied ${downloadedItem} to ${renamedItem} as ${buffer}`);
