@@ -90,7 +90,7 @@ app.post('/download', async (req, res) => {
     const vidInfo = await getVideoJsonInfo(req.body.url);
     const generatedId = uuidv4();
 
-    youtubedl(req.body.url, createDLFlags())
+    youtubedl(req.body.url, createDLFlags(generatedId))
         .then(async output => {
             // tslint:disable-next-line:no-console
             console.log(output);
@@ -99,14 +99,15 @@ app.post('/download', async (req, res) => {
             try {
                 // tslint:disable-next-line:no-bitwise
                 await fs.access(downloadedItem, constants.R_OK | constants.W_OK);
-                fs.rename(downloadedItem, renamedItem);
+                fs.copyFile(downloadedItem, renamedItem);
+                //fs.rename(downloadedItem, renamedItem);
             } catch {
                 // tslint:disable-next-line:no-console
                 console.error(`cannot access file: ${downloadedItem}`);
             }
         })
         // tslint:disable-next-line:no-console
-        .catch(output => console.log(output));
+        //.catch(output => console.log(output));
 
     res.status(200).send({ id: generatedId });
 });
