@@ -97,7 +97,7 @@ app.post('/download', async (req, res) => {
             console.log(output);
             const downloadedItem = `${FOLDER_LOCATION}${SAVE_DIRECTORY}${generatedId}.mp3`;
             const renamedItem = `${FOLDER_LOCATION}${SAVE_DIRECTORY}${vidInfo.title}.mp3`;
-            const buffer = Buffer.from(renamedItem, 'utf16le')
+            const buffer = Buffer.from(renamedItem);
             
             try {
                 // tslint:disable-next-line:no-bitwise
