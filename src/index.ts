@@ -1,6 +1,9 @@
 import express from 'express';
 import serveIndex from 'serve-index';
 import youtubedl, { YtResponse } from 'youtube-dl-exec';
+import { v4 as uuidv4 } from 'uuid';
+import fs from 'fs/promises';
+import { constants } from 'fs';
 
 const app = express();
 const PORT = process.env.PORT;
@@ -9,7 +12,7 @@ const SAVE_DIRECTORY = process.env.SAVE_DIRECTORY;
 const OUTPUT_FORMAT = process.env.OUTPUT_FORMAT;
 const AUDIO_ONLY = process.env.AUDIO_ONLY === 'true';
 
-function createDLFlags(fileName: string = null, jsonDump : boolean = false) {
+function createDLFlags(fileName: string = null, jsonDump: boolean = false) {
     const flags: any = {
         noWarnings: true,
         noCallHome: true,
@@ -32,7 +35,7 @@ function createDLFlags(fileName: string = null, jsonDump : boolean = false) {
     return flags;
 }
 
-async function getVideoJsonInfo(url : string) {
+async function getVideoJsonInfo(url: string) {
     return youtubedl(url, createDLFlags(null, true));
 }
 
@@ -85,14 +88,27 @@ app.post('/download', async (req, res) => {
     console.log(`Request to download: ${req.body.url}`);
 
     const vidInfo = await getVideoJsonInfo(req.body.url);
+    const generatedId = uuidv4();
 
     youtubedl(req.body.url, createDLFlags())
-        // tslint:disable-next-line:no-console
-        .then(output => console.log(output))
+        .then(async output => {
+            // tslint:disable-next-line:no-console
+            console.log(output);
+            const downloadedItem = `${FOLDER_LOCATION}${SAVE_DIRECTORY}${generatedId}.mp3`;
+            const renamedItem = `${FOLDER_LOCATION}${SAVE_DIRECTORY}${vidInfo.title}.mp3`;
+            try {
+                // tslint:disable-next-line:no-bitwise
+                await fs.access(downloadedItem, constants.R_OK | constants.W_OK);
+                fs.rename(downloadedItem, renamedItem);
+            } catch {
+                // tslint:disable-next-line:no-console
+                console.error(`cannot access file: ${downloadedItem}`);
+            }
+        })
         // tslint:disable-next-line:no-console
         .catch(output => console.log(output));
 
-    res.status(200).send('Success');
+    res.status(200).send({ id: generatedId });
 });
 
 // tslint:disable-next-line:no-console
