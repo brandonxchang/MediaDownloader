@@ -84,7 +84,7 @@ app.post('/videojson', async (req, res) => {
 app.post('/download', async (req, res) => {
     const vidInfo = await getVideoJsonInfo(req.body.url);
     const generatedId = uuidv4();
-    const fileName = vidInfo.title.replace(/[\/\\]/g, ' ');
+    const fileName = vidInfo.title.replace(/[\/\\><|?:"*]/g, ' ');
     const downloadedItem = `${FOLDER_LOCATION}${SAVE_DIRECTORY}${fileName}.mp3`;
 
     // tslint:disable-next-line:no-console
