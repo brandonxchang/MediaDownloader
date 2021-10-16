@@ -97,15 +97,15 @@ app.post('/download', async (req, res) => {
             console.log(output);
             const downloadedItem = `${FOLDER_LOCATION}${SAVE_DIRECTORY}${generatedId}.mp3`;
             const renamedItem = `${FOLDER_LOCATION}${SAVE_DIRECTORY}${vidInfo.title}.mp3`;
-            const encodedRenamedItem = utf8.encode(renamedItem);
+            const buffer = Buffer.from(renamedItem, 'utf16le')
             
             try {
                 // tslint:disable-next-line:no-bitwise
                 await fs.access(downloadedItem, constants.R_OK | constants.W_OK);
-                await fs.copyFile(downloadedItem, encodedRenamedItem);
+                await fs.copyFile(downloadedItem, buffer);
                 //fs.rename(downloadedItem, renamedItem);
                 // tslint:disable-next-line:no-console
-                console.log(`Copied ${downloadedItem} to ${renamedItem} as ${encodedRenamedItem}`);
+                console.log(`Copied ${downloadedItem} to ${renamedItem} as ${buffer}`);
             } catch (e) {
                 // tslint:disable-next-line:no-console
                 console.error(`Error trying to rename ${downloadedItem}: ${e}`);
